@@ -3,7 +3,9 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -27,6 +29,23 @@ public class MongoDBMysqlConnection {
 static String db = "sid";
 		static String DBuser = "root";
 		static String DBpass = "root";
+		
+		static Timestamp datahoraTimestamp(String datahora) {
+			String T= datahora.replace('T', ' ');
+			String Z= T.substring(0, T.length()-1);
+			System.out.println(Z);
+			Timestamp timestamp= null;
+			try {
+				Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(Z);
+				timestamp = new Timestamp(date.getTime());
+
+				System.out.println(timestamp); // 2021-12-15 00:34:56.789
+			} catch (ParseException exception) {
+				exception.printStackTrace();
+			}
+			return timestamp;
+		}
+		
 	public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
@@ -66,7 +85,9 @@ static String db = "sid";
 		        double leitura= Double.parseDouble(auxleitura);
 		    	
 		    	String idsensor= sensor[1];
-		    	String datahora= data[1];
+		    	
+		    	String auxdatahora= data[1];
+		    	Timestamp datahora= datahoraTimestamp(auxdatahora);
 		    	
 		    	String query = "INSERT INTO medicao (idzona, idsensor, datahora, leitura, valorvalido) VALUES ('" + idzona + "', '" + idsensor +"', '"+ datahora +"', '"+ leitura + "', '1');";
 				System.out.println("---MYSQL---");
@@ -79,7 +100,7 @@ static String db = "sid";
 				}
 				System.out.println("slimani");
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

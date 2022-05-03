@@ -1,15 +1,11 @@
 
 import org.bson.Document;
-import java.util.regex.*;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+
 public class MongoConnection {
 	
 	public static void main(String[] args) {

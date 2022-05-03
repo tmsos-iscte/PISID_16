@@ -64,7 +64,7 @@ public class MqttPublisher {
 		    msg.setRetained(false);
 		    mqttClient.publish(cloudTopic,msg);
 		    
-		    Thread.sleep(2000);
+		    //Thread.sleep(2000);
 		}
 	}
 }
