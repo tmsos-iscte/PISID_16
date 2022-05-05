@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;  
 public class data {    
@@ -7,14 +8,15 @@ public class data {
     	   String T= string.replace('T', ' ');
     	   String Z= T.substring(0, T.length()-1);
     	   System.out.println(Z);
-
+    	   Timestamp timestamp= null;
     	   try {
     	     Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(Z);
-    	     java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+    	     timestamp = new Timestamp(date.getTime());
 
-    	     System.out.println(timestamp); // 2021-12-15 00:34:56.789
+    	     ; // 2021-12-15 00:34:56.789
     	   } catch (ParseException exception) {
     	     exception.printStackTrace();
     	   }
+    	   System.out.println(timestamp);
         }    
 }    

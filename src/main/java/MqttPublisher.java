@@ -8,6 +8,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.bson.Document;
+
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -22,7 +24,7 @@ public class MqttPublisher {
 		String urlLocal = "mongodb://localhost:27017";
 		
 		String database = "sid2022";
-		String collectiont1 = "medicoes";
+		String collectiont1 = "medicoes2022";
 		
 		MongoClient localMongoClient = new MongoClient(new MongoClientURI(urlLocal));
 	    MongoDatabase localMongoDatabase = localMongoClient.getDatabase(database);
@@ -42,10 +44,10 @@ public class MqttPublisher {
 			//CRIA  mensagem
 			//Document document = new Document();
 	    	//System.out.println(cursor.next().toString());
-	    	String dados = cursor.next().toString(); 
+			Document lastInsertedDocLocal = (Document)localMongoCollection.find().sort(new BasicDBObject("_id",-1)).first(); 
 	    	//System.out.println(dados);
 	    	
-	    	String[] parts = dados.split(",");
+	    	String[] parts = lastInsertedDocLocal.toString().split(",");
 	    	String[] zona = parts[1].split("=");
 	    	String[] sensor = parts[2].split("=");
 	    	String[] data = parts[3].split("=");
@@ -64,7 +66,7 @@ public class MqttPublisher {
 		    msg.setRetained(false);
 		    mqttClient.publish(cloudTopic,msg);
 		    
-		    Thread.sleep(2000);
+		    Thread.sleep(1000);
 		}
 	}
 }
