@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -47,30 +48,6 @@ public class MqttReceiver implements MqttCallback {
 		}
 		return timestamp;
 	}
-	
-//	static boolean getTime(String datahora) throws ParseException {
-//		String T= datahora.replace('T', ' ');
-//		String Z= T.substring(0, T.length()-1);
-//		System.out.println(Z);
-//	
-//		Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(Z);	
-//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");	
-//		Date atual = new Date();
-//		int seg= date.getSeconds();
-//		if(formatter.format(atual).getSeconds()==seg) {
-//			return true;
-//		}
-//		return false;
-//	}
-
-//	public static boolean getTime(Timestamp t2){
-//		Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
-//		if(timestamp1) {
-//			return true;
-//		}
-//		return false;	
-//	}
-
 
 	public static void main(String[] args) throws InterruptedException, MqttSecurityException, MqttException {
 
@@ -105,8 +82,9 @@ public class MqttReceiver implements MqttCallback {
 	}
 
 	@Override
-	public void messageArrived(String arg0, MqttMessage arg1) throws SQLException {
-
+	public void messageArrived(String arg0, MqttMessage arg1) throws SQLException, NumberFormatException, ParseException, InterruptedException {
+		Calendar cal = Calendar.getInstance();
+		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");;
 		} catch (ClassNotFoundException e1) {
@@ -138,6 +116,14 @@ public class MqttReceiver implements MqttCallback {
 
 		String aux3= aux[2];
 		Timestamp datahora= datahoraTimestamp(aux3);
+		Timestamp dataAtualMais = new Timestamp(System.currentTimeMillis());   //NOVO !!!!!!!!!!!!
+        Timestamp dataAtualMenos = new Timestamp(System.currentTimeMillis());  //NOVO !!!!!!!!!!!!
+        cal.add(Calendar.SECOND,5);                                            //NOVO !!!!!!!!!!!!
+        dataAtualMais = new Timestamp(cal.getTime().getTime());                //NOVO !!!!!!!!!!!!
+        cal.add(Calendar.SECOND,-10);                                          //NOVO !!!!!!!!!!!!
+        dataAtualMenos = new Timestamp(cal.getTime().getTime());               //NOVO !!!!!!!!!!!!
+        int b = datahora.compareTo(dataAtualMais);                             //NOVO !!!!!!!!!!!!
+        int b2 = datahora.compareTo(dataAtualMenos);
 
 		String aux4= aux[3];
 		String[] l= aux4.split("}}}}", 2);
@@ -149,11 +135,11 @@ public class MqttReceiver implements MqttCallback {
 		int idzona= Integer.parseInt(zona);
 		double leitura= Double.parseDouble(auxleitura);
 		System.out.println("zona" + idzona);
-		
+
 		String x[];
 		int id=0;
 		String sensor="";
-//		if(getTime(datahora)==true) {
+		if((b<0&&b2>0)||b==0) {
 			if(idsensor.contains("T")) {
 				x= idsensor.split("T");
 				id= Integer.parseInt(x[1]);
@@ -182,19 +168,15 @@ public class MqttReceiver implements MqttCallback {
 					System.out.println(query);
 					try {
 						connectionSQL.createStatement().executeUpdate(query);
-						 System.out.println("SPORTING CP" + java.time.LocalDateTime.now());  
+						System.out.println("SPORTING CP" + java.time.LocalDateTime.now());  
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					Thread.sleep(1000);
+
 				}
 			}
 		}
 	}
-//}
+}
